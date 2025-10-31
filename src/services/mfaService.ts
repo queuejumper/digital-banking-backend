@@ -26,7 +26,9 @@ export const MfaService = {
   async verifyToken(userId: string, token: string) {
     const prisma = getPrisma();
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { totpEnabled: true, totpSecret: true } });
-    if (!user?.totpEnabled || !user.totpSecret) throw new AppError('OTP_SETUP_REQUIRED', 'TOTP setup required', 403);
+    // If TOTP is not enabled, no verification needed
+    if (!user?.totpEnabled || !user.totpSecret) return true;
+    // If TOTP is enabled, require and verify the token
     if (!token || token.trim().length === 0) throw new AppError('OTP_REQUIRED', 'OTP code required', 400);
     const ok = speakeasy.totp.verify({ secret: user.totpSecret, encoding: 'base32', token, window: 1 });
     if (!ok) throw new AppError('OTP_INVALID', 'Invalid OTP code', 400);

@@ -17,8 +17,8 @@ if (!process.env.DATABASE_URL) {
 // Ensure prisma client is generated
 execSync('npx prisma generate --schema=./prisma/schema.prisma', { stdio: 'inherit' });
 
-// Ensure schema is up to date before tests
-execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+// Ensure schema is up to date before tests - use db push to sync schema
+execSync('npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma', { stdio: 'inherit' });
 
 // Truncate tables between tests
 const prisma = new PrismaClient();

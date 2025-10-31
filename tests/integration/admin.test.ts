@@ -12,8 +12,8 @@ async function loginAdmin() {
   const hash = await bcrypt.hash(password, 10);
   await prisma.user.upsert({
     where: { email },
-    update: { role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, passwordHash: hash },
-    create: { email, passwordHash: hash, role: Role.ADMIN, kycStatus: KycStatus.VERIFIED },
+    update: { role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, passwordHash: hash, totpEnabled: false },
+    create: { email, passwordHash: hash, role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, totpEnabled: false },
   });
   const li = await request(app).post('/api/v1/auth/login').send({ email, password });
   return li.body.tokens.accessToken as string;
