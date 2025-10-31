@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ACCOUNT_HOLDER
+  STAFF
+  ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(ACCOUNT_HOLDER)
+  kycStatus    KycStatus  @default(PENDING)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  accounts     Account[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+}
+
+enum AccountStatus {
+  OPEN
+  CLOSED
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  currency      String
+  status        AccountStatus @default(OPEN)
+  balanceMinor  BigInt        @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  transactions  Transaction[]
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  FX_CONVERT
+  ADJUSTMENT
+}
+
+model Transaction {
+  id                 String           @id @default(cuid())
+  account            Account          @relation(fields: [accountId], references: [id])
+  accountId          String
+  type               TransactionType
+  amountMinor        BigInt
+  currency           String
+  fxRateUsed         Float?
+  relatedTransaction Transaction?     @relation("RelatedTx", fields: [relatedTransactionId], references: [id])
+  relatedTransactionId String?
+  createdAt          DateTime         @default(now())
+}
+
+model FXRate {
+  id          String   @id @default(cuid())
+  base        String
+  quote       String
+  rate        Float
+  effectiveAt DateTime
+  source      String
+
+  @@index([base, quote, effectiveAt])
+}
+
+model IdempotencyKey {
+  key            String   @id
+  requestHash    String
+  response       Json?
+  status         String
+  createdAt      DateTime @default(now())
+}
+
+

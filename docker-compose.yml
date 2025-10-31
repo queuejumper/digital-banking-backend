@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  api:
+    build: .
+    command: npm run dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/digital_bank?schema=public
+      - JWT_ACCESS_SECRET=replace_me
+      - JWT_REFRESH_SECRET=replace_me_too
+      - JWT_ACCESS_TTL=15m
+      - JWT_REFRESH_TTL=7d
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: digital_bank
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
+
+
