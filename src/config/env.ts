@@ -16,6 +16,7 @@ export const env = {
   jwtAccessTtl: process.env.JWT_ACCESS_TTL ?? '15m',
   jwtRefreshTtl: process.env.JWT_REFRESH_TTL ?? '7d',
   frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
+  debug: process.env.DEBUG === 'true' || process.env.DEBUG === '1',
 };
 
 

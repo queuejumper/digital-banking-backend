@@ -9,7 +9,11 @@ export class AppError extends Error {
 }
 
 export const toErrorResponse = (err: unknown) => {
-  const includeDebug = process.env.NODE_ENV !== 'production';
+  const includeDebug = process.env.DEBUG === 'true' || process.env.DEBUG === '1';
+  // Only log errors when DEBUG is enabled
+  if (includeDebug) {
+    console.error('Error:', err);
+  }
   if (err instanceof AppError) {
     return {
       status: err.status,

@@ -56,7 +56,7 @@ export const createApp = () => {
 
   app.use('/api/v1', apiRouter);
 
-  // Global error handler with debug details in non-production
+  // Global error handler (debug mode disabled by default)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const { status, body } = toErrorResponse(err);
