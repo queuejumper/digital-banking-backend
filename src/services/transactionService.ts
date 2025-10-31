@@ -56,8 +56,8 @@ export const TransactionService = {
     if (options?.idempotencyKey) {
       await prisma.idempotencyKey.upsert({
         where: { key: `${accountId}:${options.idempotencyKey}` },
-        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.JsonObject },
-        update: { status: 'completed', response: result as unknown as Prisma.JsonObject },
+        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.InputJsonValue },
+        update: { status: 'completed', response: result as unknown as Prisma.InputJsonValue },
       });
     }
     return result;
@@ -138,8 +138,8 @@ export const TransactionService = {
     if (options?.idempotencyKey) {
       await prisma.idempotencyKey.upsert({
         where: { key: `${accountId}:${options.idempotencyKey}` },
-        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.JsonObject },
-        update: { status: 'completed', response: result as unknown as Prisma.JsonObject },
+        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.InputJsonValue },
+        update: { status: 'completed', response: result as unknown as Prisma.InputJsonValue },
       });
     }
     return result;
@@ -187,8 +187,8 @@ export const TransactionService = {
     if (options?.idempotencyKey) {
       await prisma.idempotencyKey.upsert({
         where: { key: `${accountId}:${options.idempotencyKey}` },
-        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.JsonObject },
-        update: { status: 'completed', response: result as unknown as Prisma.JsonObject },
+        create: { key: `${accountId}:${options.idempotencyKey}`, requestHash, status: 'completed', response: result as unknown as Prisma.InputJsonValue },
+        update: { status: 'completed', response: result as unknown as Prisma.InputJsonValue },
       });
     }
     return result;

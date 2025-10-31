@@ -9,13 +9,13 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl \
   && rm -rf /var/lib/apt/lists/*
 
-# Install JS dependencies
+# Install JS dependencies (include dev deps for build)
 RUN npm install
 
 COPY . .
 
-# Build TypeScript for production
-RUN npm run build
+# Generate Prisma client and build TypeScript
+RUN npx prisma generate --schema=./prisma/schema.prisma && npm run build
 
 EXPOSE 3001
 

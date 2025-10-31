@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+.DS_Store
+.npm-cache/
+coverage/
+*.log
+.vercel/
+.turbo/
+fly.toml.local
+
