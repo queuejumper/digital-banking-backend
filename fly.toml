@@ -16,6 +16,6 @@ primary_region = "iad"
   min_machines_running = 1
 
 [deploy]
-  release_command = "npx prisma migrate deploy --schema=./prisma/schema.prisma && npm run db:seed"
+  release_command = "npx prisma migrate deploy --schema=./prisma/schema.prisma"
 
 

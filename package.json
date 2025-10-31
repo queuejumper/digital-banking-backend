@@ -13,7 +13,8 @@
     "test": "jest --runInBand",
     "test:integration": "cross-env NODE_ENV=test jest --runInBand --config jest.config.ts",
     "test:docker": "docker-compose run --rm -e DATABASE_URL=postgresql://postgres:postgres@db_test:5432/digital_bank_test?schema=public -e NODE_ENV=test -e JWT_ACCESS_SECRET=test_access_secret -e JWT_REFRESH_SECRET=test_refresh_secret api npm run test:integration",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:seed:prod": "node dist/prisma/seed.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
