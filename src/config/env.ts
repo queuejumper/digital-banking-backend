@@ -15,6 +15,7 @@ export const env = {
   jwtRefreshSecret: required('JWT_REFRESH_SECRET'),
   jwtAccessTtl: process.env.JWT_ACCESS_TTL ?? '15m',
   jwtRefreshTtl: process.env.JWT_REFRESH_TTL ?? '7d',
+  frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
 };
 
 

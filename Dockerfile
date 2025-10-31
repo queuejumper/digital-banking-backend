@@ -1,10 +1,16 @@
-FROM node:20-alpine
+FROM node:20-bullseye-slim
 
 WORKDIR /usr/src/app
 
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
-RUN npm install --quiet || true
+# Install system deps required by Prisma engines
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install JS dependencies
+RUN npm install
 
 COPY . .
 

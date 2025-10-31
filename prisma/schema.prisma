@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -78,6 +79,9 @@ model Transaction {
   relatedTransaction Transaction?     @relation("RelatedTx", fields: [relatedTransactionId], references: [id])
   relatedTransactionId String?
   createdAt          DateTime         @default(now())
+
+  // Back-reference for self relation
+  relatedBy          Transaction[]    @relation("RelatedTx")
 }
 
 model FXRate {
