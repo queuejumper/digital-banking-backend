@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+description: "Cursor rules optimized for TypeScript"
+---
+# ⚙️ Cursor Interview Rules — TypeScript
+
+## 🧠 Behavior
+- Briefly **explain your approach** before coding (unless trivial).  
+- Focus on **clarity and correctness first**, then optimization.  
+- **Modify only relevant files**, but create helpers if needed.  
+- Keep responses concise and on-topic.  
+- If something’s unclear, ask — but don’t block on it for simple assumptions.
+
+## 💻 Code Style
+- Language: **TypeScript (Node.js / Express / React)**
+- Indentation: 2 spaces
+- Quotes: single or double — consistent within file
+- Prefer:
+  - `async/await`
+  - Strong types over `any`
+  - Readable, modular code
+- SOLID principles encouraged, not mandatory.
+
+## 🧾 Workflow
+1. Explain plan or outline.
+2. Write clear, working code.
+3. Summarize key design choices.
+
+## 🔒 Boundaries
+- Don’t edit unrelated or config files.
+- No external dependencies unless required.
+- Use mocks or simple data for demos.
+
