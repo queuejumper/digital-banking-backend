@@ -8,6 +8,8 @@ import { env } from './config/env';
 
 export const createApp = () => {
   const app = express();
+  // Trust proxy headers (required for Fly.io/load balancers)
+  app.set('trust proxy', true);
   // Broad CORS for local dev with auth headers and preflight support
   app.use(
     cors({
