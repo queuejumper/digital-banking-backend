@@ -16,6 +16,6 @@ primary_region = "iad"
   min_machines_running = 1
 
 [deploy]
-  release_command = "npx prisma migrate deploy --schema=./prisma/schema.prisma"
+  release_command = "npx prisma migrate deploy --schema=./prisma/schema.prisma && (npx ts-node prisma/seed.ts || echo 'Warning: Seeding failed - run manually with: flyctl ssh console -a digital-banking-backend -C \"npm run db:seed\"')"
 
 
