@@ -18,4 +18,3 @@ function getFirstPairWithSumZero(arr: number[]): [number, number] | null {
 // Example usage
 console.log(getFirstPairWithSumZero([3, -3, 2, -2, 0])); // [3, -3]
 console.log(getFirstPairWithSumZero([5, 4, 3, 2, 1]));  // null
-console.log(getFirstPairWithSumZero([-4, 4, 2, -2]));   // [-4, 4]
