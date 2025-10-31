@@ -3,16 +3,18 @@ import cors from 'cors';
 import { router as apiRouter } from './routes';
 import { toErrorResponse } from './utils/errors';
 import { serializeJsonSafe } from './utils/json';
+import rateLimit from 'express-rate-limit';
+import { env } from './config/env';
 
 export const createApp = () => {
   const app = express();
   // Broad CORS for local dev with auth headers and preflight support
   app.use(
     cors({
-      origin: true,
+      origin: env.nodeEnv === 'production' ? env.frontendOrigin : true,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
     })
   );
   app.options('*', cors());
@@ -24,6 +26,27 @@ export const createApp = () => {
     res.json = (body: any) => originalJson(serializeJsonSafe(body));
     next();
   });
+
+  // Basic rate limiting (can be refined per-route)
+  app.use(
+    rateLimit({
+      windowMs: 60 * 1000,
+      max: 120,
+      standardHeaders: true,
+      legacyHeaders: false,
+    })
+  );
+
+  // Stricter rate limit for auth endpoints
+  app.use(
+    '/api/v1/auth',
+    rateLimit({
+      windowMs: 60 * 1000,
+      max: 30,
+      standardHeaders: true,
+      legacyHeaders: false,
+    })
+  );
 
   app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', service: 'digital-bank-backend' });

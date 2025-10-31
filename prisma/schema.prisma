@@ -26,6 +26,8 @@ model User {
   passwordHash String
   role         Role       @default(ACCOUNT_HOLDER)
   kycStatus    KycStatus  @default(PENDING)
+  totpEnabled  Boolean    @default(false)
+  totpSecret   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -101,6 +103,17 @@ model IdempotencyKey {
   response       Json?
   status         String
   createdAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  resource   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId, createdAt])
 }
 
 

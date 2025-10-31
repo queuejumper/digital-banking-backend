@@ -1,3 +1,91 @@
+## Digital Bank Backend
+
+Multi-currency digital banking API with KYC, role-based access (account holder, admin), deposits/withdrawals, currency conversion, reconciliation, idempotency, and auditing. Built with TypeScript, Express, Prisma, and Postgres. Frontend(s) consume these REST endpoints.
+
+### Quick start (Docker)
+1) Start services (API + Postgres dev + Postgres test):
+   - `docker compose up --build`
+2) API will run at `http://localhost:3001/api/v1`.
+3) Seeded users (created automatically on start):
+   - Admin: `admin@test.com` / `AdminPass123!`
+   - Holder: `demo@test.com` / `DemoPass123!`
+
+### Run tests locally
+- Ensure test DB is up (via compose): `docker compose up -d db_test`
+- Run from host against the test DB:
+  - `DATABASE_URL=postgresql://postgres:postgres@localhost:5433/digital_bank_test?schema=public npm run test:integration`
+
+### Tech stack
+- TypeScript, Node.js (Express)
+- Prisma ORM, PostgreSQL
+- Jest + Supertest (integration tests)
+- Docker + docker-compose
+
+### Auth and roles
+- JWT-based: access/refresh tokens; `/auth/refresh` rotates refresh tokens.
+- Roles: `ACCOUNT_HOLDER`, `ADMIN` (admin-only for KYC approvals, reconcile, audits, and managed lists).
+
+### KYC
+- Holder submits KYC; admin sets status (PENDING | VERIFIED | REJECTED).
+- Holder must be VERIFIED to open accounts, deposit, withdraw, or convert.
+
+### API endpoints (summary)
+- Auth
+  - `POST /auth/signup` → `{ user, tokens }`
+  - `POST /auth/login` → `{ user, tokens }`
+  - `POST /auth/refresh` → `{ accessToken, refreshToken }`
+  - `POST /auth/logout` → `{ success: true }`
+  - `GET /auth/me` → `{ user }`
+- KYC
+  - `POST /kyc/submit` (holder) → `{ user }`
+  - `GET /kyc/status` (holder) → `{ user }`
+  - `PATCH /kyc/admin/:userId/status` (admin) → `{ user }`
+- Accounts (holder: own; admin: must pass `?userId=`)
+  - `POST /accounts` `{ currency }` → `{ account }`
+  - `GET /accounts` `[?userId=]` → `{ accounts }` (admin requires userId)
+  - `GET /accounts/:accountId` → `{ account }`
+  - `DELETE /accounts/:accountId` → `{ account }` (balance must be zero)
+  - `PATCH /accounts/:accountId` (admin) `{ status }` → `{ account }`
+- Transactions
+  - `POST /accounts/:id/deposits` (Idempotency-Key) `{ amount_minor: "<digits>" }` → `{ transaction, balanceMinor }`
+  - `POST /accounts/:id/withdrawals` (Idempotency-Key) `{ amount_minor: "<digits>" }` → `{ transaction, balanceMinor }`
+  - `GET /accounts/:id/transactions?page=&pageSize=` → `{ items, total, page, pageSize }`
+  - `POST /accounts/:id/convert` (Idempotency-Key) `{ to_currency, amount_minor: "<digits>" }` → `{ transaction, balanceMinor }`
+- Admin
+  - `GET /admin/users?page=&pageSize=&search=` → holders list
+  - `GET /admin/users/:userId` → holder detail (+ accounts)
+  - `POST /admin/reconcile/run` → `{ mismatches, checked }`
+  - `GET /admin/reconcile/status` → `{ mismatches, checked }`
+  - `GET /admin/audit?actorId=&action=&from=&to=&page=&pageSize=` → audit logs
+
+### Handled guarantees and safeguards
+- Idempotency on balance-changing POSTs
+  - Client sends `Idempotency-Key`; server scopes by account and stores a request hash.
+  - Duplicate key with same request → original response; with different request → 409.
+- KYC enforcement (financial compliance)
+  - Holder must be VERIFIED for account open, deposit, withdraw, convert.
+- Ownership and RBAC
+  - Holders can access their own data only; admin-only routes guarded.
+- Amounts and currencies
+  - Amounts in minor units (strings) to avoid float errors; currency allow-list.
+- Serialization and error model
+  - BigInt → string; Date → ISO; errors follow `{ error: { code, message, [debug] } }`.
+- Rate limiting and CORS
+  - Global + stricter auth rate limits; CORS restricted by origin in production.
+- Auditing and reconciliation
+  - Audit entries for KYC, account changes, and transactions; admin can list audits.
+  - Reconciliation computes balances from transactions and flags mismatches.
+
+### Notes on FX conversion
+- Backend requires a stored FX rate for the pair; rejects if missing.
+- Frontend may fetch indicative rates from a third-party provider and confirm with user; backend records the rate it uses.
+
+### Environment (key vars)
+- `DATABASE_URL`: Postgres connection
+- `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`: JWT secrets
+- `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`: lifetimes (e.g., `15m`, `7d`)
+- `FRONTEND_ORIGIN`: allowed origin in prod
+
 ## Digital Bank Backend (TypeScript, Node.js, Express, Postgres/MySQL, Docker)
 
 This repository contains the backend for a simple digital bank supporting multi-currency accounts, deposits, withdrawals, reconciliation, currency conversion, and KYC. It exposes a REST API used by two front-ends: account holder dashboard (blue theme) and admin dashboard (green theme).

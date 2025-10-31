@@ -2,7 +2,7 @@ version: '3.9'
 services:
   api:
     build: .
-    command: sh -c "npm install && npx prisma generate --schema=./prisma/schema.prisma && npx prisma migrate dev --name init --schema=./prisma/schema.prisma && npm run dev"
+    command: sh -c "npm install && npx prisma generate --schema=./prisma/schema.prisma && npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma && npm run db:seed && npm run dev"
     ports:
       - "3001:3001"
     environment:
@@ -18,6 +18,7 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - db
+      - db_test
   db:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -29,7 +30,19 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+  db_test:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: digital_bank_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
 volumes:
   db_data:
+  db_test_data:
 
 

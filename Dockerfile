@@ -14,8 +14,12 @@ RUN npm install
 
 COPY . .
 
+# Build TypeScript for production
+RUN npm run build
+
 EXPOSE 3001
 
-CMD ["npm", "run", "dev"]
+# Default to production start; dev overrides via docker-compose command
+CMD ["npm", "run", "start"]
 
 
