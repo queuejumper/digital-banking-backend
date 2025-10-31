@@ -18,14 +18,14 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
-    update: { role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, passwordHash: adminHash },
-    create: { email: adminEmail, passwordHash: adminHash, role: Role.ADMIN, kycStatus: KycStatus.VERIFIED },
+    update: { role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, passwordHash: adminHash, totpEnabled: false },
+    create: { email: adminEmail, passwordHash: adminHash, role: Role.ADMIN, kycStatus: KycStatus.VERIFIED, totpEnabled: false },
   });
 
   const holder = await prisma.user.upsert({
     where: { email: holderEmail },
-    update: { role: Role.ACCOUNT_HOLDER, kycStatus: KycStatus.VERIFIED, passwordHash: holderHash },
-    create: { email: holderEmail, passwordHash: holderHash, role: Role.ACCOUNT_HOLDER, kycStatus: KycStatus.VERIFIED },
+    update: { role: Role.ACCOUNT_HOLDER, kycStatus: KycStatus.VERIFIED, passwordHash: holderHash, totpEnabled: false },
+    create: { email: holderEmail, passwordHash: holderHash, role: Role.ACCOUNT_HOLDER, kycStatus: KycStatus.VERIFIED, totpEnabled: false },
   });
 
   // Ensure a default USD account for holder
